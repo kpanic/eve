@@ -4,7 +4,8 @@
     eve.io.sqlalchemy.parser
     ~~~~~~~~~~~~~~~~~~~
 
-    This module implements a Python-to-SQLAlchemy syntax parser. Allows the SQLAlchemy
+    This module implements a Python-to-SQLAlchemy syntax parser. Allows the
+    SQLAlchemy
     data-layer to seamlessy respond to a Python-like query.
 
     :copyright: (c) 2013 by Nicola Iarocci, Tomasz Jezierski (Tefnet).
@@ -12,15 +13,17 @@
 """
 
 import ast
-from datetime import datetime
 import flask.ext.sqlalchemy as flask_sqlalchemy
+
 sqla_op = flask_sqlalchemy.sqlalchemy.sql.expression.operators
 sqla_exp = flask_sqlalchemy.sqlalchemy.sql.expression
 
+
 def parse(expression, model):
-    """Given a python-like conditional statement, returns the equivalent
-    SQLAlchemy-like query expression. Conditional and boolean operators (==, <=, >=,
-    !=, >, <) are supported.
+    """
+    Given a python-like conditional statement, returns the equivalent
+    SQLAlchemy-like query expression. Conditional and boolean operators (==,
+    <=, >=, !=, >, <) are supported.
     """
     v = SQLAVisitor(model)
     v.visit(ast.parse(expression))
@@ -32,12 +35,13 @@ class ParseError(ValueError):
 
 
 class SQLAVisitor(ast.NodeVisitor):
-    """Implements the python-to-sqlalchemy parser. Only Python conditional
+    """
+    Implements the python-to-sqlalchemy parser. Only Python conditional
     statements are supported, however nested, combined with most common compare
     and boolean operators (And and Or).
 
-    Supported compare operators: ==, >, <, !=, >=, <=
-    Supported boolean operators: And, Or
+    Supported compare operators: ==, >, <, !=, >=, <= Supported boolean
+    operators: And, Or
     """
     op_mapper = {
         ast.Eq: sqla_op.eq,
@@ -55,7 +59,8 @@ class SQLAVisitor(ast.NodeVisitor):
         self.model = model
 
     def visit_Module(self, node):
-        """ Module handler, our entry point.
+        """
+        Module handler, our entry point.
         """
         self.sqla_query = []
         self.ops = []
@@ -72,7 +77,8 @@ class SQLAVisitor(ast.NodeVisitor):
                              "supported.")
 
     def visit_Expr(self, node):
-        """ Make sure that we are parsing compare or boolean operators
+        """
+        Make sure that we are parsing compare or boolean operators
         """
         if not (isinstance(node.value, ast.Compare) or
                 isinstance(node.value, ast.BoolOp)):
@@ -80,7 +86,8 @@ class SQLAVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Compare(self, node):
-        """ Compare operator handler.
+        """
+        Compare operator handler.
         """
 
         self.visit(node.left)
@@ -100,10 +107,11 @@ class SQLAVisitor(ast.NodeVisitor):
             self.sqla_query.append(operator(left, value))
 
     def visit_BoolOp(self, node):
-        """ Boolean operator handler.
+        """
+        Boolean operator handler.
         """
         op = self.op_mapper[node.op.__class__]
-        self.ops.append({'op':op, 'args':[]})
+        self.ops.append({'op': op, 'args': []})
         for value in node.values:
             self.visit(value)
 
