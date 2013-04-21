@@ -6,7 +6,7 @@
 
     Default API settings. These can be overridden by editing this file or, more
     appropriately, by using a custom settings module (see the optional
-    'settings' argument or the EVE_SETTING environment variable).
+    'settings' argument or the EVE_SETTINGS environment variable).
 
     :copyright: (c) 2012 by Nicola Iarocci.
     :license: BSD, see LICENSE for more details.
