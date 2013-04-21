@@ -131,7 +131,10 @@ class Eve(Flask):
             # assume the path is relative to the calling script folder
             abspath = os.path.abspath(os.path.dirname(sys.argv[0]))
             pyfile = os.path.join(abspath, self.settings)
-        self.config.from_pyfile(pyfile)
+        # TODO: handle better the failure -- in virtualenv when running
+        # nosetests pyfile is pointing to the bin of the virtualenv
+
+        self.config.from_pyfile(pyfile, silent=True)
 
         #overwrite settings with custom environment variable
         envvar = 'EVE_SETTINGS'
