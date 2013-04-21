@@ -21,6 +21,7 @@ from parser import parse, ParseError
 from eve.io.base import DataLayer, ConnectionException
 from eve.utils import config
 
+
 class SQLAJSONDecoder(json.JSONDecoder):
     def decode(self, s):
         # Turn RFC-1123 strings into datetime values.
@@ -31,18 +32,20 @@ class SQLAJSONDecoder(json.JSONDecoder):
         except:
             return rv
 
+
 class SQLAResult(MutableMapping):
     def __init__(self, result):
         self._result = result
 
     def __getitem__(self, key):
         if key in [config.LAST_UPDATED, config.DATE_CREATED] and key not in self:
-            # if SQLA model doesn't have LAST_UPDATED or DATE_CREATED return current datetime
+            # if SQLA model doesn't have LAST_UPDATED or DATE_CREATED return
+            # current datetime
             return datetime.now()
         elif key == config.ID_FIELD:
             pkey = self._get_pkey()
             if len(pkey) > 1:
-                raise ValueError # TODO: composite primary key
+                raise ValueError  # TODO: composite primary key
             return pkey[0]
         return getattr(self._result, key)
 
@@ -72,8 +75,10 @@ class SQLAResult(MutableMapping):
         mapper = flask_sqlalchemy.sqlalchemy.orm.object_mapper(self._result)
         return mapper.primary_key_from_instance(self._result)
 
+
 class SQLAResultCollection(object):
     result_item_cls = SQLAResult
+
     def __init__(self, cursor):
         self._cursor = cursor
 
@@ -101,7 +106,6 @@ class SQLAlchemy(DataLayer):
         """
         return self.driver.Model._decl_class_registry[model_name.capitalize()]
 
-        
     def find(self, resource, req):
         """Retrieves a set of documents matching a given request. Queries can
         be expressed in two different formats: the mongo query syntax, and the
@@ -146,7 +150,7 @@ class SQLAlchemy(DataLayer):
 
         if req.sort:
             ql = []
-            for key,asc in ast.literal_eval(req.sort).iteritems(): # why not json.loads?
+            for key, asc in ast.literal_eval(req.sort).iteritems():  # why not json.loads?
                 ql.append(getattr(model, key) if asc == 1 else getattr(model, key).desc())
             query = query.order_by(*ql)
 
@@ -189,8 +193,8 @@ class SQLAlchemy(DataLayer):
             self.driver.session.commit()
             mapper = self.driver.object_mapper(model_instance)
             pkey = mapper.primary_key_from_instance(model_instance)
-            if len(pkey)>1:
-                raise ValueError # TODO: composite primary key
+            if len(pkey) > 1:
+                raise ValueError  # TODO: composite primary key
             rv.append(pkey[0])
         return rv
 
