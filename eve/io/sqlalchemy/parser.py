@@ -122,7 +122,9 @@ class SQLAVisitor(ast.NodeVisitor):
             self.sqla_query.append(tops['op'](*tops['args']))
 
     def visit_Call(self, node):
-        # TODO ?
+        # TODO: for example when calling with using datetime(1961, 8, 4)
+        #       node.args is a list of "arg.n" where "n" are the values passed
+        #       to the function call
         pass
 
     def visit_Attribute(self, node):
